@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import re
-import collections
+from collections import Counter, OrderedDict
 import requests
 import sys
 
@@ -15,7 +15,7 @@ def get_user_inputs():
     """
     Helper function to get user inputs for page_id to fetch wiki content from and words to print
     :return wiki_page_id: page_id for wiki
-    :return words_to_print: top n frequent words to print 
+    :return words_to_print: top n frequent words to print
     """
     # TODO Add exception handling
     if PYTHON_MAJOR_VERSION == '3':
@@ -54,16 +54,17 @@ def get_wiki_content(wiki_page_id):
 
 def convert_json_to_word_list(wiki_content_json, wiki_page_id):
     """
-    Helper function to extract and convert. As regex are precompiled, exceptions are avoided.
+    Helper function to extract and convert.
     :param wiki_content_json: content json to extract page content from
     :return word_list: word_list with all required filters
     """
     try:
         # extract the the content from query.pages.[wiki_page_id].extract, replace .() with space and split
-        word_list = re.sub(r'[.()\[\]\{\}\<\>:\/]', " ", wiki_content_json['query']['pages'][wiki_page_id]['extract']).split()
+        #word_list = re.sub(r'[.()\[\]\{\}\<\>:\/]', " ", wiki_content_json['query']['pages'][wiki_page_id]['extract']).split()
+        word_list = re.sub(r'[^\w| ]', " ", wiki_content_json['query']['pages'][wiki_page_id]['extract']).split()
 
         # strip the spliced word for possible punctuations, discard the word > 4 char length.
-        word_list = [word for word in [re.sub(r'^[,.\"\';:]|[,.\"\';:]$', '', word) for word in word_list] if len(word) >= 4 and not word.isnumeric()]
+        word_list = [word for word in word_list if len(word) >= 4 and not word.isnumeric()]
         return word_list
     except Exception as e:
         print(" [ EXCEPTION : Generic Exception Occurred : {} ]".format(str(e)))
@@ -78,11 +79,11 @@ def get_top_n_frequent_words(word_list, num_of_top_words):
     """
     try:
         # find the frequencies of the word using collections.Counter().most_common()
-        frequencies = collections.Counter(word_list).most_common()
+        frequencies = Counter(word_list).most_common()
 
         # find the top n frequent words
         i = 0
-        required_words = {}
+        required_words = OrderedDict()
         for frequency in frequencies:
             if str(frequency[1]) in required_words:
                 required_words[str(frequency[1])].append(str(frequency[0]))
@@ -106,4 +107,13 @@ if __name__ == '__main__':
     wiki_content_json = get_wiki_content(wiki_page_id)
     word_list = convert_json_to_word_list(wiki_content_json, wiki_page_id)
     result = get_top_n_frequent_words(word_list, int(num_of_top_words))
-    print(result)
+
+    print("\nURL being called: {}".format(WIKI_PAGE_URL.format(wiki_page_id)))
+    print("\nTitle : {}".format(wiki_content_json['query']['pages'][wiki_page_id]['title']))
+
+    if len(result) < int(num_of_top_words):
+        num_of_top_words = len(result)
+
+    print("Top {} Words:".format(str(num_of_top_words)))
+    for frequency, words in result.items():
+        print(" - {} {}".format(frequency, ', '.join(words)))
