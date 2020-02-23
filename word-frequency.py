@@ -60,7 +60,6 @@ def convert_json_to_word_list(wiki_content_json, wiki_page_id):
     """
     try:
         # extract the the content from query.pages.[wiki_page_id].extract, replace .() with space and split
-        # word_list = re.sub(r'[.()\[\]\{\}\<\>:\/]', " ", wiki_content_json['query']['pages'][wiki_page_id]['extract']).split()
         word_list = re.sub(r'[^\w| ]', " ", wiki_content_json['query']['pages'][wiki_page_id]['extract']).split()
 
         # strip the spliced word for possible punctuations, discard the word > 4 char length.
