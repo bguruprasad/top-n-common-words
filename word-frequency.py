@@ -19,11 +19,11 @@ def get_user_inputs():
     """
     # TODO Add exception handling
     if PYTHON_MAJOR_VERSION == '3':
-        wiki_page_id = str(input(" # Please Enter Wiki Page Id to fetch content from: "))
-        num_of_top_words = str(input(" # Please Enter how many words to Frequent words to print: "))
+        wiki_page_id = str(input("# Please Enter Wiki Page Id to fetch content from: "))
+        num_of_top_words = str(input("# Please Enter how many words to Frequent words to print: "))
     elif PYTHON_MAJOR_VERSION == '2':
-        wiki_page_id = str(raw_input(" # Please Enter Wiki Page Id to fetch content from: "))
-        num_of_top_words = str(raw_input(" # Please Enter how many top Frequent words to print: "))
+        wiki_page_id = str(raw_input("# Please Enter Wiki Page Id to fetch content from: "))
+        num_of_top_words = str(raw_input("# Please Enter how many top Frequent words to print: "))
 
     return wiki_page_id, num_of_top_words
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
     print("\nURL being called: {}".format(WIKI_PAGE_URL.format(wiki_page_id)))
     if len(result) < int(num_of_top_words):
-        print("Found only top {} frequent words instead of {}.".format(str(len(result)), num_of_top_words))
+        print("\nFound only top {} frequent words instead of {}.".format(str(len(result)), num_of_top_words))
         num_of_top_words = len(result)
 
     print("\nTitle : {}".format(wiki_content_json['query']['pages'][wiki_page_id]['title']))
