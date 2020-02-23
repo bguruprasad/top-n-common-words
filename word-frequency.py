@@ -60,7 +60,7 @@ def convert_json_to_word_list(wiki_content_json, wiki_page_id):
     """
     try:
         # extract the the content from query.pages.[wiki_page_id].extract, replace .() with space and split
-        #word_list = re.sub(r'[.()\[\]\{\}\<\>:\/]', " ", wiki_content_json['query']['pages'][wiki_page_id]['extract']).split()
+        # word_list = re.sub(r'[.()\[\]\{\}\<\>:\/]', " ", wiki_content_json['query']['pages'][wiki_page_id]['extract']).split()
         word_list = re.sub(r'[^\w| ]', " ", wiki_content_json['query']['pages'][wiki_page_id]['extract']).split()
 
         # strip the spliced word for possible punctuations, discard the word > 4 char length.
@@ -97,22 +97,19 @@ def get_top_n_frequent_words(word_list, num_of_top_words):
         print(" [ EXCEPTION : Generic Exception Occurred : {} ]".format(str(e)))
 
 
-# TODO Add user input statement for pageid and number of top K frequencies to print
-page_id = "21721040"
-num_of_top_word = 5
-
 if __name__ == '__main__':
     print("[ FINDING TOP N MOST FREQUENT WORDS ]")
-    wiki_page_id, num_of_top_words = "21721047", "7"#get_user_inputs()
+    wiki_page_id, num_of_top_words = get_user_inputs()
     wiki_content_json = get_wiki_content(wiki_page_id)
     word_list = convert_json_to_word_list(wiki_content_json, wiki_page_id)
     result = get_top_n_frequent_words(word_list, int(num_of_top_words))
 
     print("\nURL being called: {}".format(WIKI_PAGE_URL.format(wiki_page_id)))
-    print("\nTitle : {}".format(wiki_content_json['query']['pages'][wiki_page_id]['title']))
-
     if len(result) < int(num_of_top_words):
+        print("Found only top {} frequent words instead of {}.".format(str(len(result)), num_of_top_words))
         num_of_top_words = len(result)
+
+    print("\nTitle : {}".format(wiki_content_json['query']['pages'][wiki_page_id]['title']))
 
     print("Top {} Words:".format(str(num_of_top_words)))
     for frequency, words in result.items():
