@@ -4,33 +4,36 @@ from collections import Counter, OrderedDict
 import requests
 import sys
 
-
 # Global Variables
 PYTHON_MAJOR_VERSION = sys.version[0]
 WIKI_PAGE_URL = "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&pageids={}&explaintext&format=json"
 
 
-# Helper Functions
 def get_user_inputs():
     """
-    Helper function to get user inputs for page_id to fetch wiki content from and words to print
+    Function to get user inputs for page_id to fetch wiki content from and words to print
     :return wiki_page_id: page_id for wiki
     :return words_to_print: top n frequent words to print
     """
-    # TODO Add exception handling
-    if PYTHON_MAJOR_VERSION == '3':
-        wiki_page_id = str(input("# Please Enter Wiki Page Id to fetch content from: "))
-        num_of_top_words = str(input("# Please Enter how many words to Frequent words to print: "))
-    elif PYTHON_MAJOR_VERSION == '2':
-        wiki_page_id = str(raw_input("# Please Enter Wiki Page Id to fetch content from: "))
-        num_of_top_words = str(raw_input("# Please Enter how many top Frequent words to print: "))
+    wiki_page_id, num_of_top_words = '', ''
+    while not wiki_page_id.isnumeric():
+        if PYTHON_MAJOR_VERSION == '3':
+            wiki_page_id = str(input("# Please Enter Wiki Page Id to fetch content from (accepts digits only): "))
+        elif PYTHON_MAJOR_VERSION == '2':
+            wiki_page_id = str(raw_input("# Please Enter Wiki Page Id to fetch content from (accepts digits only): "))
+
+    while not num_of_top_words.isnumeric():
+        if PYTHON_MAJOR_VERSION == '3':
+            num_of_top_words = str(input("# Please Enter how many words to Frequent words to print (accepts digits only): "))
+        elif PYTHON_MAJOR_VERSION == '2':
+            num_of_top_words = str(raw_input("# Please Enter how many top Frequent words to print (accepts digits only): "))
 
     return wiki_page_id, num_of_top_words
 
 
 def get_wiki_content(wiki_page_id):
     """
-    Helper function to get wiki page content for page_id provided.
+    Function to get wiki page content for page_id provided.
     :param wiki_page_id: page_id to fetch json content from
     :return wiki_content: json object for wiki page content
     """
@@ -54,7 +57,7 @@ def get_wiki_content(wiki_page_id):
 
 def convert_json_to_word_list(wiki_content_json, wiki_page_id):
     """
-    Helper function to extract and convert.
+    Function to extract and convert.
     :param wiki_content_json: content json to extract page content from
     :return word_list: word_list with all required filters
     """
@@ -71,7 +74,7 @@ def convert_json_to_word_list(wiki_content_json, wiki_page_id):
 
 def get_top_n_frequent_words(word_list, num_of_top_words):
     """
-    Helper function to generate list of frequent words and return requested top n words
+    Function to generate list of frequent words and return requested top n words
     :param word_list: word_list to finding frequencies
     :param num_of_top_words: number of top n words to print
     :return: dictionary containing { frequencies: [word_list] }
@@ -97,19 +100,22 @@ def get_top_n_frequent_words(word_list, num_of_top_words):
 
 
 if __name__ == '__main__':
-    print("[ FINDING TOP N MOST FREQUENT WORDS ]")
-    wiki_page_id, num_of_top_words = get_user_inputs()
-    wiki_content_json = get_wiki_content(wiki_page_id)
-    word_list = convert_json_to_word_list(wiki_content_json, wiki_page_id)
-    result = get_top_n_frequent_words(word_list, int(num_of_top_words))
+    try:
+        print("[ FINDING TOP N MOST FREQUENT WORDS ]")
+        wiki_page_id, num_of_top_words = get_user_inputs()
+        wiki_content_json = get_wiki_content(wiki_page_id)
+        word_list = convert_json_to_word_list(wiki_content_json, wiki_page_id)
+        result = get_top_n_frequent_words(word_list, int(num_of_top_words))
 
-    print("\nURL being called: {}".format(WIKI_PAGE_URL.format(wiki_page_id)))
-    if len(result) < int(num_of_top_words):
-        print("\nFound only top {} frequent words instead of {}.".format(str(len(result)), num_of_top_words))
-        num_of_top_words = len(result)
+        print("\nURL being called: {}".format(WIKI_PAGE_URL.format(wiki_page_id)))
+        if len(result) < int(num_of_top_words):
+            print("\nFound only top {} frequent words instead of {}.".format(str(len(result)), num_of_top_words))
+            num_of_top_words = len(result)
 
-    print("\nTitle : {}".format(wiki_content_json['query']['pages'][wiki_page_id]['title']))
+        print("\nTitle : {}".format(wiki_content_json['query']['pages'][wiki_page_id]['title']))
 
-    print("Top {} Words:".format(str(num_of_top_words)))
-    for frequency, words in result.items():
-        print(" - {} {}".format(frequency, ', '.join(words)))
+        print("Top {} Words:".format(str(num_of_top_words)))
+        for frequency, words in result.items():
+            print(" - {} {}".format(frequency, ', '.join(words)))
+    except Exception as e:
+        print(" [ EXCEPTION : Generic Exception Occurred : {} ]".format(str(e)))
