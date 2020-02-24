@@ -16,13 +16,13 @@ def get_user_inputs():
     :return words_to_print: top n frequent words to print
     """
     wiki_page_id, num_of_top_words = '', ''
-    while not wiki_page_id.isnumeric():
+    while not wiki_page_id.isdigit():
         if PYTHON_MAJOR_VERSION == '3':
             wiki_page_id = str(input("# Please Enter Wiki Page Id to fetch content from (accepts digits only): "))
         elif PYTHON_MAJOR_VERSION == '2':
             wiki_page_id = str(raw_input("# Please Enter Wiki Page Id to fetch content from (accepts digits only): "))
 
-    while not num_of_top_words.isnumeric():
+    while not num_of_top_words.isdigit():
         if PYTHON_MAJOR_VERSION == '3':
             num_of_top_words = str(input("# Please Enter how many words to Frequent words to print (accepts digits only): "))
         elif PYTHON_MAJOR_VERSION == '2':
@@ -92,6 +92,7 @@ def get_top_n_frequent_words(word_list, num_of_top_words):
         for frequency in frequencies:
             if str(frequency[1]) in required_words:
                 required_words[str(frequency[1])].append(str(frequency[0]))
+                required_words[str(frequency[1])].sort()
             else:
                 if i < num_of_top_words:
                     required_words[str(frequency[1])] = [str(frequency[0])]
