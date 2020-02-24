@@ -110,13 +110,14 @@ def check_valid_key_json(wiki_content_json, wiki_page_id):
     :param wiki_page_id: wiki page id
     :return: True if required keys are present, else False
     """
+    is_key_valid = False
     try:
         if 'query' in wiki_content_json:
             if 'pages' in wiki_content_json['query']:
                 if str(wiki_page_id) in wiki_content_json['query']['pages']:
                     if 'extract' in wiki_content_json['query']['pages'][str(wiki_page_id)]:
                         if 'title' in wiki_content_json['query']['pages'][str(wiki_page_id)]:
-                            return True
+                            is_key_valid = True
                         else:
                             raise KeyError('query.pages.{}.title'.format(str(wiki_page_id)))
                     else:
@@ -129,10 +130,10 @@ def check_valid_key_json(wiki_content_json, wiki_page_id):
             raise KeyError('query')
     except KeyError as ke:
         print("[ EXCEPTION : Key does not exists : {} ]".format(str(ke)))
-        return False
     except Exception as e:
         print("[ EXCEPTION : Generic Exception Occurred : {} ]".format(str(e)))
-        return False
+    finally:
+        return is_key_valid
 
 
 if __name__ == '__main__':
