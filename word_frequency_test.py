@@ -15,32 +15,20 @@ class WordFrequencyTest(unittest.TestCase):
         """
         Test for verifying json object is being returned.
         """
-        self.assertEqual(bool(word_frequency.get_wiki_content(self.wiki_page_id)), True)
+        self.assertEqual(bool(word_frequency.get_wiki_content(word_frequency.WIKI_PAGE_URL, self.wiki_page_id)), True)
 
     def test_valid_extract_key_present(self):
         """
         Test for validating if json object have valid extract key present
         """
-        self.assertTrue(word_frequency.get_wiki_content(self.wiki_page_id)['query']['pages'][self.wiki_page_id]['extract'])
+        self.assertTrue(word_frequency.get_wiki_content(word_frequency.WIKI_PAGE_URL, self.wiki_page_id)['query']['pages'][self.wiki_page_id]['extract'])
 
     def test_valid_title_key_present(self):
         """
         Test for validating if json object have valid title key present
         """
-        self.assertTrue(word_frequency.get_wiki_content(self.wiki_page_id)['query']['pages'][self.wiki_page_id]['title'])
+        self.assertTrue(word_frequency.get_wiki_content(word_frequency.WIKI_PAGE_URL, self.wiki_page_id)['query']['pages'][self.wiki_page_id]['title'])
 
-    """
-    @mock.patch('word_frequency.requests.get')
-    def test_request_http_error(self, mock_get_wiki_content):
-        #Test for behaviour on http error for get_wiki_content function
-        
-        mock_response = mock.Mock()
-        http_error = requests.exceptions.HTTPError()
-        mock_response.raise_for_status.side_effect = http_error
-        mock_get_wiki_content.return_value = mock_response
-        with self.assertRaises(requests.exceptions.HTTPError):
-            word_frequency.get_wiki_content(self.wiki_page_id)
-    """
     def test_convert_json_to_word_list(self):
         """
         Test to validate correct word list is being returned
@@ -69,7 +57,7 @@ class WordFrequencyTest(unittest.TestCase):
         word_list = self._get_word_list_from_sample_json()
         original_result = word_frequency.get_top_n_frequent_words(word_list, 5)
         excepted_result = OrderedDict()
-        for pair in [('20', ['Stack', 'questions']), ('17', ['Overflow']), ('12', ['users']), ('11', ['that', 'site']), ('10', ['question'])]:
+        for pair in [('20', ['Stack', 'questions']), ('17', ['Overflow']), ('12', ['users']), ('11', ['site', 'that']), ('10', ['question'])]:
             excepted_result[pair[0]] = pair[1]
 
         self.assertDictEqual(original_result, excepted_result)
