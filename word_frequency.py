@@ -92,6 +92,7 @@ def get_top_n_frequent_words(word_list, num_of_top_words):
         for frequency in frequencies:
             if str(frequency[1]) in required_words:
                 required_words[str(frequency[1])].append(str(frequency[0]))
+                required_words[str(frequency[1])].sort()
             else:
                 if i < num_of_top_words:
                     required_words[str(frequency[1])] = [str(frequency[0])]
